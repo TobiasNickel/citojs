@@ -49,7 +49,7 @@
     function norm(node, oldNode) {
         var type = typeof node;
         if (type === 'string') {
-            node = {tag: '#', children: node};
+            node = {t: '#', children: node};
         } else if (type === 'function') {
             node = node(oldNode);
             node = (node === undefined) ? oldNode : norm(node, oldNode);
@@ -60,7 +60,7 @@
     function normOnly(node, origChild, oldChild) {
         var child = norm(origChild, oldChild);
         if (origChild !== child && node) {
-            node.children = child;
+            node.c = child;
         }
         return child;
     }
@@ -69,7 +69,7 @@
         var child = normOnly(null, getOnlyChild(children, childrenType));
         if (!child.dom) {
             child.dom = domElement.firstChild;
-            if (child.tag === '<') {
+            if (child.t === '<') {
                 child.domLength = domElement.childNodes.length;
             }
         }
@@ -91,7 +91,7 @@
             if (children === undefined) {
                 children = oldChildren;
             }
-            node.children = children;
+            node.c = children;
         }
         return children;
     }
@@ -201,7 +201,7 @@
             return insertNodeHTML(node, domParent, nextChild, replace);
         }
 
-        var domNode, tag = node.tag, children = node.children;
+        var domNode, tag = node.t, children = node.c;
         switch (tag) {
             case undefined:
                 return createFragment(node, children, domParent, parentNs, nextChild, replace);
@@ -252,7 +252,7 @@
                     default: ns = parentNs; break;
                 }
 
-                var attrs = node.attrs,
+                var attrs = node.a,
                     is = attrs && attrs.is;
                 if (ns) {
                     node.ns = ns;
@@ -274,7 +274,7 @@
                 if (attrs) {
                     updateAttributes(domNode, tag, ns, attrs);
                 }
-                var events = node.events;
+                var events = node.e;
                 if (events) {
                     updateEvents(domNode, node, events);
                 }
@@ -343,7 +343,7 @@
     // FIXME namespace issue in FF
     // TODO omit all unnecessary endOfText
     function createNodeHTML(node, context) {
-        var tag = node.tag, children = node.children;
+        var tag = node.t, children = node.c;
         switch (tag) {
             case '#':
                 return escapeContent(children) + endOfText;
@@ -354,7 +354,7 @@
             default:
                 var html;
                 if (tag) {
-                    var attrs = node.attrs;
+                    var attrs = node.a;
                     if (tag === 'select' && attrs) {
                         context = {selectedIndex: attrs.selectedIndex, value: attrs.value, optionIndex: 0};
                     } else if (tag === 'option' && context) {
@@ -424,7 +424,7 @@
 
     // TODO only use indexOf + splitText when necessary
     function initVirtualDOM(domNode, node) {
-        var tag = node.tag;
+        var tag = node.t;
         if (tag) {
             node.dom = domNode;
             var text, endIndex;
@@ -467,10 +467,10 @@
                     node.domLength = domLength;
                     return nextDomNode;
                 default:
-                    var children = node.children,
+                    var children = node.c,
                         childrenType = getChildrenType(children);
                     if (childrenType > 1) {
-                        children = node.children;
+                        children = node.c;
                         var childDomNode = domNode.firstChild;
                         for (var i = 0, childrenLength = children.length; i < childrenLength; i++) {
                             childDomNode = initVirtualDOM(childDomNode, children[i]);
@@ -484,7 +484,7 @@
                         }
                     }
 
-                    var events = node.events;
+                    var events = node.e;
                     if (events) {
                         updateEvents(domNode, node, events);
 
@@ -502,7 +502,7 @@
     }
 
     function initVirtualDOMFragment(domNode, node) {
-        var children = node.children,
+        var children = node.c,
             childrenType = getChildrenType(children),
             nextDomNode;
         if (childrenType === 0) {
@@ -871,6 +871,7 @@
     }
 
     function updateChildren(domElement, element, ns, oldChildren, children, inFragment, outerNextChild) {
+        var i;
         children = normChildren(element, children, oldChildren);
         if (children === oldChildren) {
             return;
@@ -911,7 +912,7 @@
         }
 
         if (childrenType === -1) {
-            element.children = children = [children];
+            element.c = children = [children];
         }
         if (oldChildrenType < 2) {
             oldChild = normOnlyOld(oldChildren, oldChildrenType, domElement);
@@ -993,7 +994,7 @@
         } else if (startIndex > endIndex) {
             removeChildren(domElement, oldChildren, oldStartIndex, oldEndIndex + 1);
         } else {
-            var i, oldNextChild = oldChildren[oldEndIndex + 1],
+            var oldNextChild = oldChildren[oldEndIndex + 1],
                 oldChildrenMap = {};
             for (i = oldEndIndex; i >= oldStartIndex; i--) {
                 oldChild = oldChildren[i];
@@ -1033,7 +1034,7 @@
     function eventHandler(event) {
         event = getFixedEvent(event, this); // jshint ignore:line
         var currentTarget = event.currentTarget,
-            eventHandlers = currentTarget.virtualNode.events[event.type];
+            eventHandlers = currentTarget.virtualNode.e[event.type];
         if (isArray(eventHandlers)) {
             for (var i = 0, len = eventHandlers.length; i < len; i++) {
                 callEventHandler(eventHandlers[i], currentTarget, event);
@@ -1091,12 +1092,12 @@
         if (node === oldNode) {
             return;
         }
-        var tag = node.tag;
-        if (oldNode.tag !== tag) {
+        var tag = node.t;
+        if (oldNode.t !== tag) {
             createNode(node, domParent, parentNs, oldNode, true);
         } else {
             var domNode = oldNode.dom,
-                oldChildren = oldNode.children, children = node.children;
+                oldChildren = oldNode.c, children = node.c;
             switch (tag) {
                 case undefined:
                     var nextChild = (nextChildChildren && nextChildIndex < nextChildChildren.length) ? nextChildChildren[nextChildIndex] : outerNextChild;
@@ -1118,7 +1119,7 @@
                     }
                     break;
                 default:
-                    var attrs = node.attrs, oldAttrs = oldNode.attrs;
+                    var attrs = node.a, oldAttrs = oldNode.a;
                     if ((attrs && attrs.is) !== (oldAttrs && oldAttrs.is)) {
                         createNode(node, domParent, parentNs, oldNode, true);
                         return;
@@ -1131,7 +1132,7 @@
                         updateChildren(domNode, node, ns, oldChildren, children, false);
                     }
 
-                    var events = node.events, oldEvents = oldNode.events;
+                    var events = node.e, oldEvents = oldNode.e;
                     if (attrs !== oldAttrs) {
                         var changedHandlers = events && events.$changed;
                         var changes = updateAttributes(domNode, tag, ns, attrs, oldAttrs, !!changedHandlers);
@@ -1172,7 +1173,7 @@
             return;
         } else {
             updateChildren(domParent, node, parentNs, oldChildren, children, true, nextChild);
-            children = node.children;
+            children = node.c;
             if (isArray(children)) {
                 domNode = children[0].dom;
                 domLength = 0;
@@ -1193,7 +1194,7 @@
         if (!isString(node)) {
             var domNode = node.dom;
             if (domNode) {
-                var events = node.events;
+                var events = node.e;
                 if (events) {
                     for (var eventType in events) {
                         removeEventHandler(domNode, eventType);
@@ -1207,7 +1208,7 @@
                     domNode.virtualNode = undefined;
                 }
             }
-            var children = node.children;
+            var children = node.c;
             if (children) {
                 destroyNodes(children, getChildrenType(children));
             }
@@ -1263,9 +1264,9 @@
         },
         updateChildren: function (element, children) {
             var activeElement = document.activeElement;
-            var oldChildren = element.children;
+            var oldChildren = element.c;
             if (oldChildren !== children) {
-                updateChildren(element.dom, element, element.ns, oldChildren, children, !element.tag);
+                updateChildren(element.dom, element, element.ns, oldChildren, children, !element.t);
             }
             maintainFocus(activeElement);
         },
@@ -1302,7 +1303,7 @@
                 children = normChildren(node, newChildren, oldChildren);
             }
             // TODO if the parent has been updated too, then this is misleading
-            else if (node.children === children) {
+            else if (node.c === children) {
                 vdom.updateChildren(node, newChildren);
             }
         });

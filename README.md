@@ -1,3 +1,11 @@
+# changes in this fork
+the attributes in the dom are renamed:
+ - tag - t
+ - attrs - a
+ - children - c
+ - events - e
+
+
 *The development of this library has stopped because of personal reasons. Please only use it for uncritical experiments. If you are interested to take ownership of it, you can send me an email to citojsweb@gmail.com.*
 
 # cito.js
@@ -34,7 +42,7 @@ First, we initialize an array with one list item [node](#element-node):
 
 ```javascript
 var items = [
-    {tag: 'li', children: 'text'}
+    {t: 'li', c: 'text'}
 ];
 ```
 
@@ -43,9 +51,9 @@ Then we define a root function which returns a div container with a button and a
 ```javascript
 function root() {
     return {
-        tag: 'div', children: [
-            {tag: 'button', children: 'double'},
-            {tag: 'ul', children: items}
+        t: 'div', c: [
+            {t: 'button', c: 'double'},
+            {t: 'ul', c: items}
         ]
     };
 }
@@ -67,9 +75,9 @@ function doubleList() {
 
 function root() {
     return {
-        tag: 'div', children: [
-            {tag: 'button', children: 'double', events: {click: doubleList},
-            {tag: 'ul', children: items}
+        t: 'div', c: [
+            {t: 'button', c: 'double', e: {click: doubleList},
+            {t: 'ul', c: items}
         ]
     };
 }
@@ -79,7 +87,7 @@ Last but not least, we move the button into its own button function and add a to
 
 ```javascript
 var items = [
-    {tag: 'li', children: 'text'}
+    {t: 'li', c: 'text'}
 ];
 
 function doubleList() {
@@ -89,18 +97,18 @@ function doubleList() {
 
 function button() {
     return {
-        tag: 'button',
-        attrs: {title: 'double the list'},
-        events: {click: doubleList},
-        children: 'double'
+        t: 'button',
+        a: {title: 'double the list'},
+        e: {click: doubleList},
+        c: 'double'
     }
 }
 
 function root() {
     return {
-        tag: 'div', children: [
+        t: 'div', c: [
             button,
-            {tag: 'ul', children: items}
+            {t: 'ul', c: items}
         ]
     };
 }
@@ -132,21 +140,21 @@ The element node is the most basic node type. Examples:
 
 ```javascript
 // Empty element with attributes
-{tag: 'img', attrs: {src: 'http://...', alt: 'Image ...'}}
+{t: 'img', a: {src: 'http://...', alt: 'Image ...'}}
 
 // Element with one child
-{tag: 'ul', children: [{tag: 'li', ...}]}
+{t: 'ul', c: [{t: 'li', ...}]}
 // or without array
-{tag: 'ul', children: {tag: 'li', ...}}
+{t: 'ul', c: {t: 'li', ...}}
 
 // Element with multiple children
-{tag: 'ul', children: [
-    {tag: 'li', ...},
-    {tag: 'li', ...}
+{t: 'ul', c: [
+    {t: 'li', ...},
+    {t: 'li', ...}
 ]}
 
 // Element with text content
-{tag: 'span', children: 'Text ...'}
+{t: 'span', c: 'Text ...'}
 ```
 
 ###### Attributes
@@ -155,10 +163,10 @@ Element attributes can be set with the `attrs` property. The attribute name is a
 
 ```javascript
 // Element with an id and class
-{tag: 'input', attrs: {id: 'name-field', 'class': 'important-field'}}
+{t: 'input', a: {id: 'name-field', 'class': 'important-field'}}
 
 // Input element which is required
-{tag: 'input', attrs: {required: true}}
+{t: 'input', a: {required: true}}
 ```
 
 ###### Inline Style
@@ -167,10 +175,10 @@ To style an element, you can either use a CSS string or an object with CSS prope
 
 ```javascript
 // Element with style string
-{tag: 'input', attrs: {style: 'border-bottom: 1px solid black; color: gray;'}}
+{t: 'input', a: {style: 'border-bottom: 1px solid black; color: gray;'}}
 
 // Element with style object
-{tag: 'input', attrs: {style: {'border-bottom': '1px solid black', color: 'gray'}}}
+{t: 'input', a: {style: {'border-bottom': '1px solid black', color: 'gray'}}}
 ```
 
 ###### Input Elements
@@ -182,25 +190,25 @@ Moreover, there are a few other noteworthy exceptions:
 The content of `textarea` elements must be provided with the `value` attribute instead of the `children` property:
 
 ```javascript
-{tag: 'textarea', attrs: {value: 'Text ...'}}
+{t: 'textarea', a: {value: 'Text ...'}}
 ```
 
 To define the current option of a `select` element you can either set the `value` or `selectedIndex` attribute or set the `selected` attribute of an `option` directly:
 
 ```javascript
 // Select option by setting the value
-{tag: 'select', attrs: {value: 'val1'}, children: [
-    {tag: 'option', attrs: {value: 'val1'}, ...}
+{t: 'select', a: {value: 'val1'}, c: [
+    {t: 'option', a: {value: 'val1'}, ...}
 ]}
 
 // Select option by setting the selectedIndex
-{tag: 'select', attrs: {selectedIndex: 0}, children: [
-    {tag: 'option', attrs: {value: 'val1'}, ...}
+{t: 'select', a: {selectedIndex: 0}, c: [
+    {t: 'option', a: {value: 'val1'}, ...}
 ]}
 
 // Select option by setting selected on the option
-{tag: 'select', attrs: children: [
-    {tag: 'option', attrs: {selected: true}, ...}
+{t: 'select', a: c: [
+    {t: 'option', a: {selected: true}, ...}
 ]}
 ```
 
@@ -210,11 +218,11 @@ Usually, you will use text nodes like this:
 
 ```javascript
 // Span element with text node
-{tag: 'span', children: 'Text ...'}
+{t: 'span', c: 'Text ...'}
 // Span element with text node and b element
-{tag: 'span', children: [
+{t: 'span', c: [
     'Text ...',
-    {tag: 'b', children: '...'}
+    {t: 'b', c: '...'}
 ]}
 ```
 
@@ -222,7 +230,7 @@ But there is also a more advanced form for [keyed nodes](#keyed-nodes):
 
 ```javascript
 // Text node as object with optional key
-{tag: '#', key: '1', children: 'text'}
+{t: '#', key: '1', c: 'text'}
 ```
 
 The `#` tag name comes from `#text` which is the DOM name of a text node.
@@ -230,7 +238,7 @@ The `#` tag name comes from `#text` which is the DOM name of a text node.
 ##### Comment Node
 
 ```javascript
-{tag: '!', children: 'Comment ...'}
+{t: '!', c: 'Comment ...'}
 ```
 
 The `!` tag name comes from `<!--`.
@@ -240,7 +248,7 @@ The `!` tag name comes from `<!--`.
 HTML nodes allows you to insert pieces of HTML into the DOM. They should only be used if the other node types are not an option, for example if the HTML string comes from another system, since they are inherently vulnerable to XSS attacks:
 
 ```javascript
-{tag: '<', children: '<div>text</div><div>...'}
+{t: '<', c: '<div>text</div><div>...'}
 ```
 
 The `<` tag name comes from `<element>`.
@@ -249,29 +257,29 @@ The `<` tag name comes from `<element>`.
 
 Fragments are a less common but very powerful feature in virtual DOM libraries. Similar to DOM document fragments, they do not add a node to the DOM themselves and can either be empty or contain one or a list of nodes. Some examples:
 
-Empty: `{}` or `{children: []}`
-One child:  `{children: {tag: 'div', ...}}`
+Empty: `{}` or `{c: []}`
+One child:  `{c: {t: 'div', ...}}`
 Multiple children:
 
 ```javascript
-{children: [
-    {tag: 'div', ...},
-    {tag: 'div', ...}
+{c: [
+    {t: 'div', ...},
+    {t: 'div', ...}
 ]}
 ```
 
 Although you could avoid fragments, they often make your program simpler and improve the performance. Let's have a look at the following example:
 
 ```javascript
-{tag: 'ul', children: list1.concat(list2)}
+{t: 'ul', c: list1.concat(list2)}
 ```
 
 If this node is updated and the last item of the first list has been removed, it will have to re-render all the elements of the second list. Instead of using [keyed nodes](#keyed-nodes) to solve this problem, we can now simply use fragments:
 
 ```javascript
-{tag: 'ul', children: [
-    {children: list1},
-    {children: list2}
+{t: 'ul', c: [
+    {c: list1},
+    {c: list2}
 ]}
 ```
 
@@ -285,14 +293,14 @@ Event handlers can be added to element nodes like this:
 
 ```javascript
 // Element with one event listener
-{tag: 'button', events: {
+{t: 'button', e: {
     click: function (event) {
         ...
     }
 }}
 
 // Element with multiple event listener of the same type
-{tag: 'button', events: {
+{t: 'button', e: {
     click: [
         function (event) {},
         function (event) {}
@@ -300,7 +308,7 @@ Event handlers can be added to element nodes like this:
 }}
 
 // Element with multiple event listener of different types
-{tag: 'button', events: {
+{t: 'button', e: {
     click: function (event) {},
     mousemove: function (event) {},
 }}
@@ -326,8 +334,8 @@ The idea behind virtual DOM libraries is that DOM operations are expensive and t
 
 ```javascript
 cito.vdom.append(document.body, {
-    tag: 'div',
-    children: function (oldChildren) {
+    t: 'div',
+    c: function (oldChildren) {
         if (!oldChildren) { // oldChildren is undefined when the node is created
             return createExpensiveChildren();
         }
@@ -344,18 +352,18 @@ Similar to other virtual DOM libraries, cito.js supports keyed nodes:
 
 ```javascript
 var node = cito.vdom.append(document.body, {
-    tag: 'ul',
-    children: [
-        {tag: 'li', key: 0, children: 'item 0'},
-        {tag: 'li', key: 1, children: 'item 1'}
+    t: 'ul',
+    c: [
+        {t: 'li', key: 0, c: 'item 0'},
+        {t: 'li', key: 1, c: 'item 1'}
     ]
 });
 
 cito.vdom.update(node, {
-    tag: 'ul',
-    children: [
-        {tag: 'li', key: 1, children: 'item 1'},
-        {tag: 'li', key: 0, children: 'item 0'}
+    t: 'ul',
+    c: [
+        {t: 'li', key: 1, c: 'item 1'},
+        {t: 'li', key: 0, c: 'item 0'}
     ]
 });
 ```
@@ -371,9 +379,9 @@ If you only want to add/remove a node conditionally without having overhead you 
 Since promises are becoming more and more popular in browsers, cito.js has built-in support for them:
 
 ```javascript
-{tag:'ul', children: listPromise.then(function (list) {
+{t:'ul', c: listPromise.then(function (list) {
     return list.map(function (item) {
-        return {tag: 'li', children: item.text};
+        return {t: 'li', c: item.text};
     };
 })}
 ```
@@ -381,8 +389,8 @@ Since promises are becoming more and more popular in browsers, cito.js has built
 Promises can also be used for single nodes:
 
 ```javascript
-{tag:'ul', children: [
-    {tag: 'h1', children: 'Title'},
+{t:'ul', c: [
+    {t: 'h1', c: 'Title'},
     textPromise.then(function (text) {
         return text;
     })
